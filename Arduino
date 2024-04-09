@@ -1,0 +1,71 @@
+#include "AccelStepper.h"
+
+#define dirPin 2
+#define stepPin 3
+#define switchPin 5
+
+int incomingByte = 0; // for incoming serial data
+
+AccelStepper stepper(AccelStepper::DRIVER, stepPin, dirPin);
+
+void setup() {
+  Serial.begin(9600); // opens serial port, sets data rate to 9600 bps
+  pinMode(switchPin, INPUT_PULLUP);
+  stepper.setMaxSpeed(1000);    // Setze die maximale Geschwindigkeit (kann angepasst werden)
+  stepper.setAcceleration(2000); // Setze die Beschleunigung (kann angepasst werden)
+  stepper.setSpeed(-1000);
+  int currentPosition = 0;
+  while (digitalRead(switchPin) == HIGH)
+  {
+    stepper.runSpeed();
+
+  }
+  stepper.setCurrentPosition(currentPosition);
+}
+
+void loop() {
+
+// send data only when you receive data:
+  if (Serial.available() > 0) {
+    // read the incoming byte:
+    incomingByte = Serial.read();
+
+    stepper.move(incomingByte);
+    stepper.runToPosition();
+
+    // say what you got:
+    Serial.print("I received: ");
+    Serial.println(incomingByte, DEC);
+  }
+/*stepper.move(4000);
+  stepper.runToPosition();
+
+  // 
+
+  delay(200);
+
+  // Fahre 10 Schritte rückwärts
+  stepper.move(-4000);
+  stepper.runToPosition();
+
+  // 
+
+  delay(200);
+*/
+/*stepper.moveTo(3);
+stepper.setSpeed(500);
+  stepper.run();
+
+  // 
+
+  
+
+
+  stepper.moveTo(2);
+  stepper.setSpeed(500);
+  stepper.run();
+
+
+  */
+
+}
